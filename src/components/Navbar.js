@@ -1,8 +1,35 @@
 import { NavLink } from "react-router-dom";
-import { Excalamation, HandBurger, StellarConnection } from "assets/svgs";
+import { Excalamation, HandBurger, PropertyHBAR, PropertyHBARBlack, HbarConnection } from "assets/svgs";
 import { rocPurpleLogo } from 'assets/images';
 
-const Navbar = ({toggle, connectWallet, connectedWalletPublicKey}) => {
+// Hedera Connection
+import { useEffect, useState } from 'react';
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
+import { useWalletInterface } from '../services/wallets/useWalletInterface';
+import { WalletSelectionDialog } from './WalletSelectionDialog';
+
+const Navbar = ({toggle}) => {
+
+  // Hedera Connection Related
+
+  const [open, setOpen] = useState(false);
+  const { accountId, walletInterface } = useWalletInterface();
+
+  const handleConnect = async () => {
+    if (accountId) {
+      walletInterface.disconnect();
+    } else {
+      setOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (accountId) {
+      setOpen(false);
+    }
+  }, [accountId]);
+
+  // ------------------------------------
   
   const abbreviate = (addr) => `${addr.slice(0, 3)}...${addr.slice(-5)}`;
 
@@ -27,25 +54,33 @@ const Navbar = ({toggle, connectWallet, connectedWalletPublicKey}) => {
       <NavLink to={"/"} className={"block lg:hidden pl-2"}>
         <img src={rocPurpleLogo} alt="website-logo" className="h-11" />
       </NavLink>
-      <div className="space-x-2 flex items-center">
-        {connectedWalletPublicKey ? (
+
+      <div className="flex items-center space-x-2">
+        {accountId ? (
           <div className="flex items-center space-x-2 bg-rocPurple-300 px-1 lg:px-2 py-1 rounded-full cursor-pointer">
             <p className="bg-white text-black text-[16px] rounded-full px-4 font-manrope">
-              {abbreviate(connectedWalletPublicKey)}
+              {accountId}
             </p>
-            <StellarConnection />
+            <HbarConnection />
           </div>
         ) : (
           <button
-            className="bg-rocPurple-300 px-4 lg:px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100"
-            onClick={connectWallet}
+            type="button"
+            onClick={handleConnect}
+            className="cursor-pointer bg-rocPurple-300 px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100 focus:outline-none focus:ring-2 focus:ring-[#1a54da]/60"
           >
-            Connect
+            Connect Wallet
           </button>
         )}
         <HandBurger
           onClick={toggle}
           className="cursor-pointer block lg:hidden"
+        />
+
+        <WalletSelectionDialog
+          open={open}
+          setOpen={setOpen}
+          onClose={() => setOpen(false)}
         />
       </div>
     </div>

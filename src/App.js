@@ -16,6 +16,7 @@ import MarketPlaceDetailPage from "./pages/MarketPlaceDetail";
 import HomeLayout from "components/HomeLayout";
 import PrivacyPolicy from "pages/PrivacyPolicy";
 import TermsOfService from "pages/TermsAndService";
+import { AllWalletsProvider } from './services/wallets/AllWalletsProvider'; // Hedera Connection
 
 const App = () => {
 
@@ -26,6 +27,7 @@ const App = () => {
 
   return (
     <HashRouter>
+      <AllWalletsProvider>
       <Toaster position="top-right" reverseOrder={false} />
       <HomeLayout onConnect={setWalletInfo}>
         <Routes>
@@ -58,6 +60,7 @@ const App = () => {
           <Route path="/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </HomeLayout>
+      </AllWalletsProvider>
     </HashRouter>
   );
 };
