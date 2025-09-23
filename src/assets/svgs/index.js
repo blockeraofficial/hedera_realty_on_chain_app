@@ -60,6 +60,9 @@ import { ReactComponent as Upload } from "./upload.svg";
 import { ReactComponent as AskToCommunity } from "./ask-community.svg";
 import { ReactComponent as WatchDemoVideo } from "./watch-demo-video.svg";
 import { ReactComponent as MoreInfo } from "./more-info.svg"
+import { ReactComponent as PropertyHBAR } from "./hbar-logo.svg"
+import { ReactComponent as HbarConnection } from "./hbar-logo-30-30.svg"
+import { ReactComponent as PropertyHBARBlack } from "./hbar-logo-black.svg"
 
 
 export {
@@ -67,7 +70,9 @@ export {
   Remax,
   Excalamation,
   StellarConnection,
-  PropertyXLM,
+  PropertyHBAR,
+  HbarConnection,
+  PropertyHBARBlack,
   HandBurger,
   Verified,
   Twitter,
