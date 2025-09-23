@@ -1,0 +1,184 @@
+import { QuestionMark, BuyHomeTag, BuyRocToken, Staking, AskToCommunity, WatchDemoVideo, MoreInfo } from "assets/svgs";
+import { FAQQuestion, Tag } from "modules/faq";
+import { useState } from "react";
+
+const GENERAL_TAGS = [
+  {
+    id: 1,
+    name: "Tokenization Article",
+    SVG: () => <BuyHomeTag width={60} height = {60} />,
+    tag: "https://medium.com/@blockera_online/tokenization-revolutionizing-real-world-assets-4fe54ec0b275"
+  },
+  {
+    id: 2,
+    name: "ROC Whitepaper V1",
+    SVG: () => <BuyRocToken width={65} height = {65} />,
+    tag: "https://blockera.gitbook.io/roc"
+  },
+  {
+    id: 3,
+    name: "Linktree",
+    SVG: () => <Staking width={60} height = {60} />,
+    tag: "https://linktr.ee/blockera"
+  },
+  {
+    id: 4,
+    name: "Ask community",
+    SVG: () => <AskToCommunity width={60} height = {60} />,
+    tag: "https://web.telegram.org/k/#@realtyonchain"
+  },
+  {
+    id: 5,
+    name: "Watch demo video",
+    SVG: () => <WatchDemoVideo width={60} height = {60} />,
+    tag: "https://www.youtube.com/watch?v=EIZooSwDFho&ab_channel=Blockera"
+  },
+  {
+    id: 6,
+    name: "Info about Blockera",
+    SVG: () => <MoreInfo width={60} height = {60} />,
+    tag: "https://www.blockera.online/"
+  },
+];
+
+const FAQs = [
+  {
+    id: 1,
+    question: "How can I buy real estate tokens step by step to participate beta testing?",
+    answer: "You need to acquire a web3 wallet compatible with Stellar Testnet and acquire testnet XLM's",
+  },
+  {
+    id: 2,
+    question: "Will I be the legal shareholder of the property after I buy real estate tokens?",
+    answer: "After all the required money accumulated in the platform, we will buy the property from the owner and you will be the legal shareholder",
+  },
+  {
+    id: 3,
+    question: "How do you provide legal ownership via buying real estate tokens?",
+    answer: "We prepare legal documents after we buy the real estate from its owner",
+  },
+  {
+    id: 4,
+    question: "What are the available paying options currently?",
+    answer: "Currently we accept only Testnet XLM",
+  },
+  {
+    id: 5,
+    question: "How can I benefit from ROC tokens?",
+    answer: "In the future, you will be able to buy assets with ROC tokens, you can stake ROC tokens to get USDT and ROC with interest.",
+  },
+  {
+    id: 6,
+    question: "I am not able to operate approve what should I do?",
+    answer: "Just to make sure your approved amount is 0. Because if the approved amount is not 0, the USDT contract does not allow you to approve",
+  },
+  {
+    id: 7,
+    question: "Will I be able to get rent share of the property?",
+    answer: "Once the whole money accumulated to buy the property, yes you will get rent that you can claim from your dashboard.",
+  },
+  {
+    id: 8,
+    question: "What if I want to sell my real estate tokens on the platforms such as OpenSea, Blue etc.. after I bought them?",
+    answer: "You can however, the person that is buying the tokens must also be verified via our platform.",
+  },
+  {
+    id: 9,
+    question: "Where can I read ROC whitepaper?",
+    answer: "From the following link ...",
+  },
+  {
+    id: 10,
+    question: "How is the project takes advantage of AI?",
+    answer: "We select the best property locations that can bring most income and APR.",
+  },
+  {
+    id: 11,
+    question: "Can I see purchased property tokens?",
+    answer: "You can look at Dashboard section for your connected account",
+  },
+  {
+    id: 12,
+    question: "How do you tokenize properties?",
+    answer: "We tokenize assets using Stellar Asset Standard",
+  },
+  {
+    id: 13,
+    question: "Is there a maximum amount I can invest in a property",
+    answer: "Yes. It is calculated as the real value of real estate in terms of Testnet XLM divided by 10. So each property has a maximum value of tokens that can be bought",
+  },
+  {
+    id: 14,
+    question: "Will I lose my money if the property is not fully funded within its listing period?",
+    answer: "No we will refund your money to your web3 wallet! You can check the responsible function that does that refund in our smart contract!",
+  },
+  {
+    id: 15,
+    question: "Do I need to invest in cryptocurrency?",
+    answer: "You need to acquire Testnet XLM to your web3 wallet to be able to buy property tokens",
+  },
+  {
+    id: 16,
+    question: "How do I receive my interest?",
+    answer: "Through APR, and rent income",
+  },
+  {
+    id: 17,
+    question: "Which documents are needed to pass KYC?",
+    answer: "Your id document/passport/driver license that shows your signature",
+  },
+];
+
+const FAQPage = () => {
+  const [searchText, setSearchText] = useState("");
+
+  const searchedFAQs = searchText
+    ? FAQs.filter(
+        (item) =>
+          item.question.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.answer.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : FAQs;
+
+  return (
+    <div className="space-y-6">
+      <div className="p-4 md:p-6 text-center space-y-4">
+        <h1 className="font-bold font-prompt text-3xl md:text-2xl lg:text-4xl text-rocPurple-800 font-prompt">
+          FREQUENTLY ASKED QUESTIONS
+        </h1>
+        <div className="flex justify-center">
+          <div className="relative rounded-full overflow-hidden w-full md:max-w-[880px]">
+            <input
+              type="text"
+              className="w-full p-4 rounded-full border-2 border-rocWhite-300 focus:outline-none focus:border-rocPurple-300 font-manrope"
+              placeholder="Type to ask us anything..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <QuestionMark />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
+        {GENERAL_TAGS.map((item) => (
+          <a href={item.tag} target="_blank" rel="noopener noreferrer">
+          <Tag key={item.id} name={item.name} logo={item.SVG}/>
+          </a>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {searchedFAQs.map((item) => (
+          <FAQQuestion
+            key={item.id}
+            question={item.question}
+            answer={item.answer}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default FAQPage;
