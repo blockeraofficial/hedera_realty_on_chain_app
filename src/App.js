@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 import { Routes, Route, HashRouter } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
@@ -16,26 +16,25 @@ import MarketPlaceDetailPage from "./pages/MarketPlaceDetail";
 import HomeLayout from "components/HomeLayout";
 import PrivacyPolicy from "pages/PrivacyPolicy";
 import TermsOfService from "pages/TermsAndService";
-import { AllWalletsProvider } from './services/wallets/AllWalletsProvider'; // Hedera Connection
+// Hedera Connection
+import { AllWalletsProvider } from './services/wallets/AllWalletsProvider'; 
+// Hedera
+import { useWalletInterface } from "./services/wallets/useWalletInterface";
+import { ethers } from "ethers";
+// ------------------------------------------------------------------------
 
 const App = () => {
-
-  const [walletInfo, setWalletInfo] = useState({
-    publicKey: null,
-    kit: null,
-  });
 
   return (
     <HashRouter>
       <AllWalletsProvider>
       <Toaster position="top-right" reverseOrder={false} />
-      <HomeLayout onConnect={setWalletInfo}>
+      <HomeLayout>
         <Routes>
           <Route path="/" element={<MarketPlacePage/>} />
           <Route path="/dashboard" element=
             {
               <DashboardPage
-                publicKey={walletInfo.publicKey}
               />
             } 
           />
@@ -51,8 +50,6 @@ const App = () => {
           <Route path="/property/:id" element=
             {
               <MarketPlaceDetailPage
-                publicKey={walletInfo.publicKey}
-                kit={walletInfo.kit}
               />
             } 
           />
