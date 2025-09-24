@@ -2,50 +2,24 @@ import { LocationPointer, Home } from "assets/svgs";
 import { Title } from "components";
 import { DamacCavalli1 } from "assets/images";
 
-const assetIssuer = process.env.REACT_APP_ASSET_ISSUER
-
 const Properties = ({ accountNfts }) => {
-  
-  // Necessary step to add front-end features on the tokens
 
-  // For POC, keep 1 tokenized assets
+  // Always show EXACTLY 3 decimals
+  function formatHbarFixed(tinybar) {
+    const n = Number(tinybar ?? 0) / 10 ** 8;
+    return n.toFixed(3); // <- fixed 3 decimals, never trimmed
+  }
+  // -----------------------------------------------------------
+  
 
   console.log("accountNfts:", accountNfts)
 
-  // const enrichedAssets = accountNfts.slice(0,1).map((item) => {
-  //   if (item.asset_code === "T001" && item.asset_issuer=== "GBBMT2OIPVZKBWTCVXATGZ25RPFRU6EBPC4PIOXLEYR5W3GCNVRYIOAX") {
-  //     return {
-  //       ...item,
-  //       asset_name: "Cavalli Apartment 1",
-  //       asset_location: "Dubai",
-  //       asset_image_link: "https://mma.prnasia.com/media2/1629472/DAMAC_Properties.jpg?p=publish",
-  //       total_assets_available: "10000",
-  //     };
-  //   } // else if (item.asset_code === "T002") {
-  //     // return {
-  //     //   ...item,
-  //     //   asset_name: "Aykon City Tower B",
-  //     //   asset_location: "Dubai",
-  //     //   asset_image_link: "https://ipfs.io/ipfs/QmS8sW4sH1wMqkfPZHHMoFni4BKu82e5riVibQh6JB5GZB",
-  //     //   total_assets_available: "2000",
-  //     // };
-  //   // } 
-  //   else  {
-  //     return item; 
-  //   }
-  // });
-
   const enrichedAssets = accountNfts
-  .filter(
-    (item) =>
-      parseFloat(item?.balance) > 0 &&
-      item.asset_code === "T001" &&
-      item.asset_issuer === assetIssuer.toString()
-  )
   .map((item) => ({
     ...item,
     asset_name: "Cavalli Apartment 1",
     asset_location: "Dubai",
+    asset_code: "R001",
     asset_image_link: DamacCavalli1,
     total_assets_available: "10000",
   }));
@@ -77,7 +51,7 @@ const Properties = ({ accountNfts }) => {
               <h6 className="w-20 text-center">Asset Balance</h6>
             </div>
             <div className="w-2/12 border-r border-rocPurple-800 text-md text-rocPurple-800 font-bold h-16 flex justify-center items-center  font-manrope">
-              <h6 className="w-40 text-center">Total Asset Tokens Available</h6>
+              <h6 className="w-40 text-center">Max Supply</h6>
             </div>
             <h6 className="w-2/12 text-md text-rocPurple-800 font-bold h-16 flex justify-center items-center font-manrope">
               Claim Rent
@@ -106,7 +80,7 @@ const Properties = ({ accountNfts }) => {
                     <div className="flex items-center absolute top-2 left-2 space-x-2 text-rocWhite-900 font-bold px-2 py-1 rounded-lg bg-[#290E4180]">
                       <Home />
                       <h6 className=" font-manrope">
-                        {`${item?.asset_code}`}
+                        {`${item.asset_code}`}
                       </h6>
                     </div>
                   </h6>
@@ -117,8 +91,8 @@ const Properties = ({ accountNfts }) => {
                     <LocationPointer />
                   </h6>
                   <h6 className="w-2/12 px-4 py-6 text-center font-bold border-r-4 border-rocWhite-300 font-manrope">
-                    {Number(item.balance)} (%
-                    {((Number(item.balance) / Number(item.total_assets_available)) * 100).toFixed(2)})
+                    {Number(formatHbarFixed(item.balance))} (%
+                    {((Number(formatHbarFixed(item.balance)) / Number(item.total_assets_available)) * 100).toFixed(2)})
                   </h6>
                   <h6 className="w-2/12 px-4 py-6 text-center font-bold border-r-4 border-rocWhite-300 font-manrope">
                     {Number(item.total_assets_available)}
