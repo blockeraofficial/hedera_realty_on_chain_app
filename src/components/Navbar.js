@@ -38,7 +38,7 @@ const Navbar = ({toggle}) => {
       <div className="hidden lg:flex space-x-2 items-center ml-3">
         <Excalamation />
         <h6 className="font-semibold text-rocBlack-100 font-manrope">
-          Welcome to the Realty on Chain Beta on Stellar Testnet. Start{" "}
+          Welcome to the Realty on Chain Beta on Hedera Testnet. Start{" "}
           <a
           href="https://medium.com/@blockera_online/buy-your-first-realty-token-on-roc-beta-stellar-testnet-guide-ce11f3117566"
           target="_blank"

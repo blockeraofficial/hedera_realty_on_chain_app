@@ -1,11 +1,16 @@
 
+import { useEffect, useState } from "react";
 import axios from "axios";
+
+// const ACCOUNT_URL  = "https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.6853757";
+// const CONTRACT_URL = "https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.6873175";
+// const TARGET_TOKEN = "0.0.6873059";
 
 // BACKEND CALLS
 
 const API = axios.create({
   // baseURL: "http://localhost:4000/api",
-  baseURL: "https://stellar-kickstart-backend.onrender.com/api",
+  // baseURL: "https://stellar-kickstart-backend.onrender.com/api",
 });
 
 const ResponseInterceptor = (response) => {

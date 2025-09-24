@@ -1,47 +1,67 @@
 import { useEffect, useState } from "react";
-// Stellar
-// import { FetchStellarContractAssets } from "modules/marketplace"; // Front-end Call
-import { getStellarContractAssets } from "api"; // Backend Call
 import { DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4 } from "assets/images";
+import axios from "axios";
 
-// Stellar
 
-const API_STELLAR_EXPERT = process.env.REACT_APP_API_STELLAR_EXPERT
+const API_HEDERA_MIRRORNODE = process.env.REACT_APP_API_HEDERA_MIRRORNODE
 
 const useMarketPlace = () => {
   const [marketPlaceAssets, setMarketPlaceAssets] = useState([]);
   const [highlightedMarketplaceAssets, setHighlightedMarketplaceAssets] = useState([]);
-  const [stellarContractAllAssets, setStellarContractAllAssets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isError, setErrorFetching] = useState(false);
-  
 
-  const FetchStellarContractAllAssets = async () => {
-    setLoading(true);
+  // Hedera
+
+    // Hedera Implementation
+
+    const TARGET_TOKEN = process.env.REACT_APP_HEDERA_ASSET_CONTRACT_ID;
+
+    function extractTargetToken(obj) {
+      const tokens = obj?.tokens ?? obj?.balance?.tokens ?? [];
+      return tokens.filter((t) => t.token_id === TARGET_TOKEN);
+    }
+
+    // Always show EXACTLY 3 decimals
+    function formatHbarFixed(tinybar) {
+      const n = Number(tinybar ?? 0) / 10 ** 8;
+      return n.toFixed(3); // <- fixed 3 decimals, never trimmed
+    }
+
+    const [HederaMarketplaceAssets, setHederaMarketplaceAssets] = useState([]);
+    const [highlightedHederaMarketplaceAssets, setHederaHighlightedMarketplaceAssets] = useState([]);
+    const [hederaContractAllAssets, setHederaContractAllAssets] = useState([]);
+
+    const FetchHederaContractAllAssets = async () => {
+    setLoading(true)
+
     try {
 
-      // Stellar
-      const fetchStellarAssets = await getStellarContractAssets(API_STELLAR_EXPERT)
-      const stellarContractAssetsFetched = fetchStellarAssets.result
+      const fetchHederaAssets = await axios.get(API_HEDERA_MIRRORNODE)
+      const hederaContractAssetsFetched = fetchHederaAssets.data.balance.tokens
 
-      // Stellar
+      console.log("hederaContractAssetsFetched:", hederaContractAssetsFetched)
+      // console.log("cleanHederaAssets:", cleanHederaAssets);
+      // const assetContractCurrentTokenAmount = extractTargetToken(cleanHederaAssets)[0].balance / (10**8);
+      // 
+      // console.log("fetchHederaAssets", assetContractCurrentTokenAmount);
 
-      const stellarContractAllTokens = stellarContractAssetsFetched?.map((item, index) => ({
+      // Map the fetched tokens into structured objects
+      const hederaContractAllTokens = hederaContractAssetsFetched?.map((item, index) => ({
         ...item,
         type: "OPEN",
         location: "Dubai",
         media: "",
-        collected: (
-          ((10000 * Math.pow(10,7) - item?.balance ) / Math.pow(10,7))
-        ) / 100,
-        price: Math.pow(10,6),
+        // If the collected is 0, the app breaks
+        collected:
+          ((10000 * Math.pow(10, 8) - item?.balance) / Math.pow(10, 8)) / 100,
+        price: Math.pow(10, 6),  // Price is hard coded, change this later.
       }));
 
-      let stellarContractAllAssets = stellarContractAllTokens.filter(item => item.asset !== "XLM");
+      console.log("hederaContractAllTokens:", hederaContractAllTokens)
 
-      // For Property Details Page Update - POC 1 Tokenized Asset
-      stellarContractAllAssets = stellarContractAllAssets.slice(0,1).map((item) => {
-        if (item.asset.startsWith("T001")) {
+      const hederaContractTokenizedAsset = hederaContractAllTokens.slice(0,1).map((item) => {
+        if (item.token_id.startsWith(TARGET_TOKEN)) {
           return {
             ...item,
             name: "Cavalli Apartment 1",
@@ -59,61 +79,74 @@ const useMarketPlace = () => {
             area: 86,
             yearBuilt: 2025
           };
-        } // else if (item.asset.startsWith("T002")) {
-          // return {
-          //   ...item,
-          //   asset_name: "Aykon City Tower B",
-          //   asset_location: "Dubai",
-          //   asset_image_link: "https://ipfs.io/ipfs/QmS8sW4sH1wMqkfPZHHMoFni4BKu82e5riVibQh6JB5GZB",
-          //   total_assets_available: "2000",
-          // };
-        // } 
-        else  {
-          return item; 
-        }
-      });
+    
+      // const hederaTokenAmount = formatHbarFixed(cleanHederaAssets.balance?.balance)
+      // console.log("hederaTokenAmount", hederaTokenAmount);
+      }
 
-      setMarketPlaceAssets(stellarContractAllAssets.slice(1))         // Everything except the highligted asset
-      setHighlightedMarketplaceAssets(stellarContractAllAssets[0]);   // Highligted asset
-      setStellarContractAllAssets(stellarContractAllAssets);          // All Assets
+      console.log("1:", hederaContractTokenizedAsset.slice(0))
+      // console.log("2:", hederaContractTokenizedAsset[0])
+      // console.log("3:", hederaContractTokenizedAsset)
+    
+    })
 
-      const dataToStore = {
-        marketplaceAssets: stellarContractAllAssets.slice(1),
-        highlightedMarketplaceAssets: stellarContractAllAssets[0],
-        stellarContractAllAssets: stellarContractAllAssets,
-      };
+    setHederaMarketplaceAssets(hederaContractTokenizedAsset.slice(0))
+    setHederaHighlightedMarketplaceAssets(hederaContractTokenizedAsset.slice(0)[0])
+    setHederaContractAllAssets(hederaContractTokenizedAsset)
 
-      const currentTime = new Date().getTime();
-      sessionStorage.setItem("marketPlaceData", JSON.stringify(dataToStore));
-      sessionStorage.setItem("marketPlaceTimestamp", currentTime.toString());
-      
+    const dataToStore = {
+      HederaMarketplaceAssets: hederaContractTokenizedAsset.slice(0),
+      HederaHighlightedMarketplaceAssets: hederaContractTokenizedAsset[0],
+      HederaContractAllAssets: hederaContractTokenizedAsset,
+    };
+
+    const currentTime = new Date().getTime();
+    sessionStorage.setItem("marketPlaceData2", JSON.stringify(dataToStore));
+    sessionStorage.setItem("marketPlaceTimestamp2", currentTime.toString());
+// 
+// 
+  
       setLoading(false);
-    } catch (error) {
-      console.log("error", error);
+    } catch(error) {
+      console.log("error:", error)
       setLoading(false);
       setErrorFetching(true);
     }
-  };
+
+  }
+
+  // ------------------------------------------------
+
+  // Hedera Fetch
 
   useEffect(() => {
-    const storedData = sessionStorage.getItem("marketPlaceData");
-    const storedTimestamp = sessionStorage.getItem("marketPlaceTimestamp");
+    const storedData = sessionStorage.getItem("marketPlaceData2");
+    const storedTimestamp = sessionStorage.getItem("marketPlaceTimestamp2");
     const currentTime = new Date().getTime();
     if (
-      storedData &&
-      storedTimestamp &&
-      currentTime - parseInt(storedTimestamp) < 600000
+    storedData &&
+    storedTimestamp &&
+    currentTime - parseInt(storedTimestamp) < 600000
+    
     ) {
-      const parsedData = JSON.parse(storedData);
-      setMarketPlaceAssets(parsedData.marketplaceAssets);
-      setHighlightedMarketplaceAssets(parsedData.highlightedMarketplaceAssets);
-      setStellarContractAllAssets(parsedData.stellarContractAllAssets);
+    const parsedData = JSON.parse(storedData);
+    setHederaMarketplaceAssets(parsedData.HederaMarketplaceAssets)
+    setHederaHighlightedMarketplaceAssets(parsedData.HederaHighlightedMarketplaceAssets)
+    setHederaContractAllAssets(parsedData.HederaContractAllAssets)
+
+    console.log("HederaMarketplaceAssets STORAGEDATA1:", parsedData.HederaMarketplaceAssets)
+    console.log("HederaHighlightedMarketplaceAssets STORAGEDATA2:", parsedData.HederaHighlightedMarketplaceAssets)
+    console.log("HederaContractAllAssets STORAGEDATA3:", parsedData.HederaContractAllAssets)
+
     } else {
-      FetchStellarContractAllAssets();
+      FetchHederaContractAllAssets();
     }
   }, []);
 
-  return { loading, isError, marketPlaceAssets, highlightedMarketplaceAssets, stellarContractAllAssets };
+  return { loading, isError, marketPlaceAssets, highlightedMarketplaceAssets,
+    // Hedera
+    HederaMarketplaceAssets, highlightedHederaMarketplaceAssets, hederaContractAllAssets
+   };
 };
 
 export { useMarketPlace };
