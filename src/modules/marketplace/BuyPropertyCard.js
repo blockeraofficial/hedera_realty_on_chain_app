@@ -142,7 +142,7 @@ const BuyPropertyCard = ({
           </div>
           <div className="w-1/2 flex justify-center items-center">
             <h6 className="text-rocBlue-100 font-bold text-xl whitespace-nowrap">
-              100 Test XLM
+              100 Test HBAR
             </h6>
           </div>
         </div>

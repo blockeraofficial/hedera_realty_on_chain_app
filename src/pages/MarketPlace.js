@@ -9,20 +9,90 @@ import { DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4 } from "asse
 
 const { Title } = require("components");
 
-/* 
-  Damac Cavalli 1 (First Asset) Picture Links
-  "https://mma.prnasia.com/media2/1629472/DAMAC_Properties.jpg?p=publish",
-  "https://rangewebsite2023.s3.ap-south-1.amazonaws.com/projects/2453/DAMAC-Cavalli-Tower-Exteriors-5-%281%29.jpg",
-  "https://i.ytimg.com/vi/8NrH14M3zdk/maxresdefault.jpg",
-  "https://dubai-luxury.property/uploads/images/2021-08/36397ed90c409fbf3443407418241568.jpg"
-*/
-
 const MarketplacePage = () => {
-  const { loading, isError, highlightedMarketplaceAssets } =
+  const { loading, isError, highlightedHederaMarketplaceAssets } =
     useMarketPlace();
   const [filter, setFilter] = useState("all");
   const onChangeFilter = (filter) => setFilter(filter);
   const navigator = useNavigate();
+
+  /* Hedera Deneme 
+  
+  const denemeFunc = async () => {
+
+    const TARGET_TOKEN = "0.0.6873059";
+
+    const fetchHederaAssets = await axios.get("https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.6873175")
+    const hederaContractAssetsFetched = fetchHederaAssets.data.balance.tokens
+    console.log("MARKETPLACEPAGE1:", hederaContractAssetsFetched)
+
+    const hederaContractAllTokens = hederaContractAssetsFetched?.map((item, index) => ({
+      ...item,
+      type: "OPEN",
+      location: "Dubai",
+      media: "",
+      collected:
+        ((10000 * Math.pow(10, 7) - item?.balance) / Math.pow(10, 7)) / 100,
+      price: Math.pow(10, 6),
+    }));
+
+    console.log("hederaContractAllTokens:", hederaContractAllTokens)
+
+    const hederaContractTokenizedAsset = hederaContractAllTokens.slice(0,1).map((item) => {
+      if (item.token_id.startsWith(TARGET_TOKEN)) {
+        return {
+          ...item,
+          name: "Cavalli Apartment 1",
+          location: "Dubai",
+          images:
+              [
+                DamacCavalli1,
+                DamacCavalli2,
+                DamacCavalli3,
+                DamacCavalli4
+              ],
+          total_assets_available: "10000",
+          bedrooms: 1,
+          bathrooms: 1,
+          area: 86,
+          yearBuilt: 2025
+        };
+        
+      // const hederaTokenAmount = formatHbarFixed(cleanHederaAssets.balance?.balance)
+      // console.log("hederaTokenAmount", hederaTokenAmount);
+        }
+
+
+    })
+
+    console.log("1:", hederaContractTokenizedAsset.slice(0))
+    console.log("2:", hederaContractTokenizedAsset[0])
+    console.log("3:", hederaContractTokenizedAsset)
+  }
+
+  
+  console.log("What is going on?")
+
+  useEffect(() => {
+    denemeFunc(); // will run once after component mounts
+  }, []);
+
+
+  */
+
+
+
+
+
+
+
+
+
+  // ---------------------------------------------
+
+  console.log("highlightedHederaMarketplaceAssets123:", highlightedHederaMarketplaceAssets)
+
+  // console.log("highlightedMarketplaceAssetsOnMarketplace", highlightedMarketplaceAssets)
 
   return (
     <LoadingContainer
@@ -41,7 +111,7 @@ const MarketplacePage = () => {
                 navigator(`/property/1`)
               }
               title={"Cavalli Apartment 1"}
-              location={highlightedMarketplaceAssets?.location}
+              location={highlightedHederaMarketplaceAssets?.location}
               images={
                 [
                   DamacCavalli1,
@@ -50,19 +120,19 @@ const MarketplacePage = () => {
                   DamacCavalli4
                 ]
               }
-              type={highlightedMarketplaceAssets?.type}
+              type={highlightedHederaMarketplaceAssets?.type}
             />
           </div>
             <div className="pt-10 md:pt-0 h-full md:w-full lg:w-[32%] space-y-6">
             <PropertDetail
               id={"1"}
-              price={highlightedMarketplaceAssets?.price}
+              price={highlightedHederaMarketplaceAssets?.price}
               apr={15}
               irr={12}
               bedrooms={1}
               bathrooms={1}
               area={86}
-              collected={highlightedMarketplaceAssets.collected}
+              collected={highlightedHederaMarketplaceAssets.collected}
             />
           </div>
         </div>

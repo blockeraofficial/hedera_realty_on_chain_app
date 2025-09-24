@@ -25,10 +25,14 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
   const [isLoading, setLoading] = useState(false);
   const [loadingType, setLoadingType] = useState("");
 
-  const { stellarContractAllAssets } = useMarketPlace();
+  const { hederaContractAllAssets} = useMarketPlace();
   const params = useParams();  
 
-  const currentAsset = stellarContractAllAssets[Number(params.id) - 1]
+  // Necessary for showing the detail page of the property
+
+  const currentHederaAsset = hederaContractAllAssets[Number(params.id) - 1] 
+
+  console.log("WHAT??", hederaContractAllAssets)
 
   return (
     <LoadingContainer
@@ -49,10 +53,10 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
             </h6>
           </div>
           <Slider
-            title={currentAsset?.name}
-            location={currentAsset?.location}
-            images={currentAsset?.images || [imageURL1]}
-            type={currentAsset?.type}
+            title={currentHederaAsset?.name}
+            location={currentHederaAsset?.location}
+            images={currentHederaAsset?.images || [imageURL1]}
+            type={currentHederaAsset?.type}
             hideTopBar
           />
           <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-6 lg:space-y-0 items-center">
@@ -63,7 +67,7 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
               <div className="flex space-x-2 items-center p-1 justify-center">
                 <Bedroom />
                 <h6 className="text-rocPurple-800 font-bold text-lg">{`${
-                  currentAsset?.bedrooms || 0
+                  currentHederaAsset?.bedrooms || 0
                 }`}</h6>
               </div>
             </div>
@@ -74,7 +78,7 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
               <div className="flex space-x-2 items-center p-1 justify-center">
                 <Bathroom />
                 <h6 className="text-rocPurple-800 font-bold text-lg">{`${
-                  currentAsset?.bathrooms || 0
+                  currentHederaAsset?.bathrooms || 0
                 }`}</h6>
               </div>
             </div>
@@ -85,7 +89,7 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
               <div className="flex space-x-2 items-center p-1 justify-center">
                 <Area />
                 <h6 className="text-rocPurple-800 font-bold text-lg whitespace-nowrap">
-                  {`${currentAsset?.area} sqft`}
+                  {`${currentHederaAsset?.area} sqft`}
                 </h6>
               </div>
             </div>
@@ -96,7 +100,7 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
               <div className="flex space-x-2 items-center p-1 justify-center">
                 <YearBuilt />
                 <h6 className="text-rocPurple-800 font-bold text-lg">{`${
-                  currentAsset?.yearBuilt || 2024
+                  currentHederaAsset?.yearBuilt || 2024
                 }`}</h6>
               </div>
             </div>
@@ -106,10 +110,10 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
             <SaleTimer />
             <PropertyPriceCard
               apr={15}
-              price={currentAsset?.price | 1000000}
+              price={currentHederaAsset?.price | 1000000}
               irr={12}
               percentage={20}
-              collected={currentAsset?.collected || 0}
+              collected={currentHederaAsset?.collected || 0}
             />
             <BuyPropertyCard
               isLoading={isLoading}
@@ -125,10 +129,10 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
           <SaleTimer />
           <PropertyPriceCard
             apr={15}
-            price={currentAsset?.price | 1000000}
+            price={currentHederaAsset?.price | 1000000}
             irr={12}
             percentage={20}
-            collected={currentAsset?.collected || 0}
+            collected={currentHederaAsset?.collected || 0}
           />
           <BuyPropertyCard
             isLoading={isLoading}
