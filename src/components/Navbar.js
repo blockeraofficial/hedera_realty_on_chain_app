@@ -69,7 +69,7 @@ const Navbar = ({toggle}) => {
             onClick={handleConnect}
             className="cursor-pointer bg-rocPurple-300 px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100 focus:outline-none focus:ring-2 focus:ring-[#1a54da]/60"
           >
-            Connect Wallet
+            {accountId ? `Connected: ${accountId}` : "Connect Wallet"}
           </button>
         )}
         <HandBurger

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import './App.css';
 
 import { Routes, Route, HashRouter } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
