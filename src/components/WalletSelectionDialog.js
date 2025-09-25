@@ -25,21 +25,27 @@ export const WalletSelectionDialog = (props) => {
           />
           WalletConnect
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            connectToMetamask();
-          }}
-        >
-          <img
-            src={MetamaskLogo}
-            alt="metamask logo"
-            className="walletLogoImage"
-            style={{ padding: "4px 4px 4px 0px" }}
-          />
-          Metamask
-        </Button>
       </Stack>
     </Dialog>
   );
 };
+
+
+/*
+
+  <Button
+    variant="contained"
+    onClick={() => {
+      connectToMetamask();
+    }}
+  >
+    <img
+      src={MetamaskLogo}
+      alt="metamask logo"
+      className="walletLogoImage"
+      style={{ padding: "4px 4px 4px 0px" }}
+    />
+    Metamask
+  </Button>
+
+*/ 

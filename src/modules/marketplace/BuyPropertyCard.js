@@ -1,106 +1,99 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import toast from 'react-hot-toast';
 
 import { DollarStatusIcon } from "assets/svgs";
-import { EstablishTrustline, BuyRealtyToken } from "modules/marketplace";
+// import { BuyRealtyToken } from "modules/marketplace";
+
+// Hedera Connection
+import { useWalletInterface } from '../../services/wallets/useWalletInterface';
+
+
+// Hedera Buy Logic
+
+import { ethers } from "ethers";
+import assetManagerArtifact from "../../contract-artifacts/HederaAssetManagerContract.json";
+import { ContractId, ContractFunctionParameters, Hbar } from "@hashgraph/sdk";
+
+// -----------------------------------------------------
 
 const BuyPropertyCard = ({
   isLoading,
   loadingType,
-  publicKey,
-  kit
 }) => {
   const [propertyToken, setPropertyToken] = useState("");
-  const [trustlineStatus, setTrustlineStatus] = useState({
-    accountInfo: null,
-    isTrusted: false
-  });
   const [inputError, setInputError] = useState("");
 
-  const RPC_URL = process.env.REACT_APP_STELLAR_TESTNET_RPC_URL;
-  const ASSET_CODE = process.env.REACT_APP_ASSET_CODE;
-  const ASSET_ISSUER = process.env.REACT_APP_ASSET_ISSUER;
-  const CONTRACT_PUBLIC_KEY = process.env.REACT_APP_STELLAR_ASSET_CONTRACT_MANAGER_PUBLIC_KEY;
-  const ASSET_CONTRACT_ADDRESS = process.env.REACT_APP_ASSET_CONTRACT_ADDRESS;
+// ---- Hedera  ----
+const CONTRACT_ID = process.env.REACT_APP_HEDERA_ASSET_MANAGER_CONTRACT_ID
+const ASSET_TOKEN_EVM_ADDRESS = process.env.REACT_APP_HEDERA_ASSET_TOKEN_ADDRESS; // 0.0.6873059
+const TINYBAR_PER_WHOLE = ethers.BigNumber.from("10000000000");
+
+const BuyRealtyToken = async () => {
+
+  if (!accountId) {
+      alert("🚫 Wallet not connected.");
+      return;
+  }
+
+  try {
+
+    // The buy logic is here
+
+    const totalTinybar = TINYBAR_PER_WHOLE.mul(
+      ethers.BigNumber.from(String(propertyToken || 0))
+    );
+
+    // A) Native Hedera path — same call structure as your ContractCall.jsx
+    if (walletInterface?.executeContractFunction) {
+      
+      const h = Hbar.fromTinybars(totalTinybar.toString());
+      const adapterBuilder = {
+        // (address assetToken, uint64 assetTokenAmount)
+        
+      buildHAPIParams: () =>
+        new ContractFunctionParameters()
+          .addAddress(ASSET_TOKEN_EVM_ADDRESS.replace(/^0x/, "")) // 40-hex, no 0x
+          .addUint64(Number(propertyToken))
+      };
+      // (Optional) quick sanity log
+      // console.log("Sending tinybar:", totalTinybar.toString());
+
+      const res = await walletInterface.executeContractFunction(
+        ContractId.fromString(CONTRACT_ID),
+        "buy_realty_fraction",
+        adapterBuilder,
+        2_000_000, // gas fee
+        (propertyToken * 100)  // paid amount
+      )
+
+      return
+
+    }
+  }
+
+  catch(error) {
+    // Return the Call Alert
+    console.error('❌ Failed to buy tokens:', error.submitResponse?.data || error.message);
+  }
+}
+
+  // Hedera Connection
+
+  const [open, setOpen] = useState(false);
+  const { accountId, walletInterface, evmSigner } = useWalletInterface() || {};
 
   useEffect(() => {
-    const checkTrustlineStatus = async () => {
-      if (!publicKey) return;
-
-      const localTrust = localStorage.getItem(`trustline_${publicKey}`);
-      let trustFromLocal = null;
-
-      if (localTrust) {
-        try {
-          trustFromLocal = JSON.parse(localTrust);
-          setTrustlineStatus(trustFromLocal);
-        } catch {
-          console.warn("Corrupt trustline data in localStorage");
-        }
-      }
-
-      try {
-        const accountResponse = await axios.get(`${RPC_URL}/accounts/${publicKey}`);
-        const balances = accountResponse.data.balances;
-        const isTrustedOnChain = balances.some(
-          (balance) =>
-            balance.asset_code === ASSET_CODE &&
-            balance.asset_issuer === ASSET_ISSUER
-        );
-
-        if (!trustFromLocal || trustFromLocal.isTrusted !== isTrustedOnChain) {
-          const updatedStatus = {
-            accountInfo: accountResponse.data,
-            isTrusted: isTrustedOnChain,
-          };
-          setTrustlineStatus(updatedStatus);
-          localStorage.setItem(`trustline_${publicKey}`, JSON.stringify(updatedStatus));
-        }
-      } catch (err) {
-        console.warn("Couldn't verify trustline from chain:", err);
-      }
-    };
-
-    checkTrustlineStatus();
-  }, [publicKey]);
-
-  const EstablishTrustlineHandler = async () => {
-    try {
-      const result = await EstablishTrustline(RPC_URL, ASSET_CODE, ASSET_ISSUER, publicKey, kit);
-
-      const verifyResponse = await axios.get(`${RPC_URL}/accounts/${publicKey}`);
-      const balances = verifyResponse.data.balances;
-      const trustExists = balances.some(
-        (balance) =>
-          balance.asset_code === ASSET_CODE && balance.asset_issuer === ASSET_ISSUER
-      );
-
-      const updatedStatus = {
-        accountInfo: result,
-        isTrusted: trustExists,
-      };
-      setTrustlineStatus(updatedStatus);
-      localStorage.setItem(`trustline_${publicKey}`, JSON.stringify(updatedStatus));
-
-      if (trustExists) {
-        toast.success('Trustline established successfully!');
-      }
-    } catch (error) {
-      console.error("Failed to establish trustline", error);
-      setTrustlineStatus((prev) => ({
-        ...prev,
-        isTrusted: false
-      }));
-      localStorage.setItem(`trustline_${publicKey}`, JSON.stringify({
-        ...trustlineStatus,
-        isTrusted: false
-      }));
-      toast.error('Failed to establish trustline.');
+    if (accountId) {
+      setOpen(false);
+      console.log("Already Connected", accountId)
     }
-  };
+  }, [accountId]);
+
+  // --------------------------------------
 
   const BuyRealtyTokenHandler = async () => {
+
+    console.log("TIKLADIM")
     if (!propertyToken || Number(propertyToken) <= 0) {
       setInputError("Please enter a valid token amount.");
     
@@ -113,13 +106,10 @@ const BuyPropertyCard = ({
     setInputError("");
   
     await BuyRealtyToken(
-      RPC_URL,
-      CONTRACT_PUBLIC_KEY,
-      ASSET_CONTRACT_ADDRESS,
-      propertyToken,
-      publicKey,
-      kit
+      accountId
     );
+
+    console.log("Bu fonkst")
   
     setPropertyToken("");
     toast.success("Realty token purchase request submitted!");
@@ -166,14 +156,14 @@ const BuyPropertyCard = ({
               type="number"
               min="1"
               max="10"
-              disabled={!trustlineStatus.isTrusted}
+              disabled={!accountId}
               className={`w-full p-4 rounded-xl border-2 ${
-                !trustlineStatus.isTrusted
+                !accountId
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "border-rocPurple-300 text-rocPurple-300"
               } focus:outline-none focus:border-rocPurple-300 font-manrope`}
               placeholder={
-                !trustlineStatus.isTrusted ? "Build trustline first" : "ENTER TOKEN AMOUNT (MAX 10)"
+                !accountId ? "Connect Your Wallet First" : "ENTER TOKEN AMOUNT (MAX 10)"
               }
             />
             {inputError && (
@@ -190,27 +180,13 @@ const BuyPropertyCard = ({
           ) : (
             <>
               <button
-                className={`font-bold w-full rounded-full py-2 flex justify-center items-center ${
-                  trustlineStatus.isTrusted
-                    ? "rounded-full border-2 border-rocGreen-800 text-rocGreen-800 bg-rocGreen-200 cursor-default"
-                    : publicKey
-                    ? "bg-rocBlue-100 text-rocWhite-900 border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100"
-                    : "bg-[#808080] text-rocWhite-900 cursor-not-allowed"
-                }`}
-                onClick={EstablishTrustlineHandler}
-                disabled={!publicKey || trustlineStatus.isTrusted}
-              >
-                {trustlineStatus.isTrusted ? "Trusted" : "Build Trustline"}
-              </button>
-
-              <button
-                className={`font-bold w-full rounded-full py-2 ${
-                  publicKey && trustlineStatus.isTrusted
-                    ? "bg-rocBlue-100 text-rocWhite-900 border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100"
-                    : "bg-[#808080] text-rocWhite-900 cursor-not-allowed"
+                className={`font-bold w-56 mx-auto rounded-full py-2 ${
+                   accountId 
+                     ? "bg-rocBlue-100 text-rocWhite-900 border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100"
+                     : "bg-[#808080] text-rocWhite-900 cursor-not-allowed"
                 }`}
                 onClick={BuyRealtyTokenHandler}
-                disabled={!publicKey || !trustlineStatus.isTrusted}
+                disabled={!accountId}
               >
                 Buy
               </button>

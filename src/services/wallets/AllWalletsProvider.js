@@ -3,11 +3,14 @@ import { WalletConnectContextProvider } from "../../contexts/WalletConnectContex
 import { MetaMaskClient } from "./metamask/metamaskClient";
 import { WalletConnectClient } from "./walletconnect/walletConnectClient";
 
+
+// <MetaMaskClient />
+
 export const AllWalletsProvider = (props) => {
   return (
     <MetamaskContextProvider>
       <WalletConnectContextProvider>
-        <MetaMaskClient />
+ 
         <WalletConnectClient />
         {props.children}
       </WalletConnectContextProvider>

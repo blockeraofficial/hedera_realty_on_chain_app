@@ -118,8 +118,6 @@ const MarketPlaceDetailPage = ({publicKey, kit}) => {
             <BuyPropertyCard
               isLoading={isLoading}
               loadingType={loadingType}
-              publicKey={publicKey}
-              kit={kit}
             />
             <Documents />
           </div>

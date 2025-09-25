@@ -1,4 +1,4 @@
-import { MarketCard, MarketCard2, Banner, Slider } from "modules/marketplace";
+import { Slider } from "modules/marketplace";
 import PropertDetail from "modules/marketplace/PropertyDetail";
 import { LoadingContainer } from "components";
 import { useState } from "react";
@@ -15,84 +15,6 @@ const MarketplacePage = () => {
   const [filter, setFilter] = useState("all");
   const onChangeFilter = (filter) => setFilter(filter);
   const navigator = useNavigate();
-
-  /* Hedera Deneme 
-  
-  const denemeFunc = async () => {
-
-    const TARGET_TOKEN = "0.0.6873059";
-
-    const fetchHederaAssets = await axios.get("https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.6873175")
-    const hederaContractAssetsFetched = fetchHederaAssets.data.balance.tokens
-    console.log("MARKETPLACEPAGE1:", hederaContractAssetsFetched)
-
-    const hederaContractAllTokens = hederaContractAssetsFetched?.map((item, index) => ({
-      ...item,
-      type: "OPEN",
-      location: "Dubai",
-      media: "",
-      collected:
-        ((10000 * Math.pow(10, 7) - item?.balance) / Math.pow(10, 7)) / 100,
-      price: Math.pow(10, 6),
-    }));
-
-    console.log("hederaContractAllTokens:", hederaContractAllTokens)
-
-    const hederaContractTokenizedAsset = hederaContractAllTokens.slice(0,1).map((item) => {
-      if (item.token_id.startsWith(TARGET_TOKEN)) {
-        return {
-          ...item,
-          name: "Cavalli Apartment 1",
-          location: "Dubai",
-          images:
-              [
-                DamacCavalli1,
-                DamacCavalli2,
-                DamacCavalli3,
-                DamacCavalli4
-              ],
-          total_assets_available: "10000",
-          bedrooms: 1,
-          bathrooms: 1,
-          area: 86,
-          yearBuilt: 2025
-        };
-        
-      // const hederaTokenAmount = formatHbarFixed(cleanHederaAssets.balance?.balance)
-      // console.log("hederaTokenAmount", hederaTokenAmount);
-        }
-
-
-    })
-
-    console.log("1:", hederaContractTokenizedAsset.slice(0))
-    console.log("2:", hederaContractTokenizedAsset[0])
-    console.log("3:", hederaContractTokenizedAsset)
-  }
-
-  
-  console.log("What is going on?")
-
-  useEffect(() => {
-    denemeFunc(); // will run once after component mounts
-  }, []);
-
-
-  */
-
-
-
-
-
-
-
-
-
-  // ---------------------------------------------
-
-  console.log("highlightedHederaMarketplaceAssets123:", highlightedHederaMarketplaceAssets)
-
-  // console.log("highlightedMarketplaceAssetsOnMarketplace", highlightedMarketplaceAssets)
 
   return (
     <LoadingContainer
