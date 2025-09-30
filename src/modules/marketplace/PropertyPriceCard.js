@@ -12,7 +12,9 @@ const PropertyPriceCard = ({ price, irr, apr, collected }) => {
           <h6 className="text-4xl font-bold text-rocBlue-100">
             {`${(price || 0).toLocaleString()}`}
           </h6>
-          <PropertyHBARBlack />
+          <span class="inline-flex items-center justify-center overflow-visible">
+            <PropertyHBARBlack className="w-10 h-10"/>
+          </span>        
         </div>
         <div className="flex space-x-2 items-center justify-between">
           <div className="flex space-x-2 items-center">
