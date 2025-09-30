@@ -5,15 +5,15 @@ import { WalletConnectClient } from "./walletconnect/walletConnectClient";
 
 
 // <MetaMaskClient />
+//  <MetamaskContextProvider>
+//  </MetamaskContextProvider>
 
 export const AllWalletsProvider = (props) => {
   return (
-    <MetamaskContextProvider>
       <WalletConnectContextProvider>
- 
         <WalletConnectClient />
         {props.children}
       </WalletConnectContextProvider>
-    </MetamaskContextProvider>
+ 
   );
 };
