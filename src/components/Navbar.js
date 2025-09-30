@@ -1,10 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { Excalamation, HandBurger, PropertyHBAR, PropertyHBARBlack, HbarConnection } from "assets/svgs";
+import { Excalamation, HandBurger, HbarConnection } from "assets/svgs";
 import { rocPurpleLogo } from 'assets/images';
 
 // Hedera Connection
 import { useEffect, useState } from 'react';
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 import { useWalletInterface } from '../services/wallets/useWalletInterface';
 import { WalletSelectionDialog } from './WalletSelectionDialog';
 

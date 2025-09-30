@@ -12,11 +12,6 @@ import EventsCard from "./EventsCard";
 import OraclesCard from "./OraclesCard";
 import Documents from "./Documents";
 import VideoPreview from "./VideoPreview";
-//Stellar
-import FetchStellarContractAssets from "./FetchStellarContractAssets";
-import EstablishTrustline from "./EstablishTrustline";
-import BuyRealtyToken from "./BuyRealtyToken";
-//Stellar
 
 export {
   MarketCard,
@@ -33,9 +28,4 @@ export {
   EventsCard,
   Documents,
   VideoPreview,
-  //Stellar
-  FetchStellarContractAssets,
-  EstablishTrustline,
-  BuyRealtyToken
-  //Stellar
 };
