@@ -1,152 +1,153 @@
+// useMarketPlace.js
 import { useEffect, useState } from "react";
 import { DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4 } from "assets/images";
 import axios from "axios";
 
+const API_HEDERA_MIRRORNODE = process.env.REACT_APP_API_HEDERA_MIRRORNODE || "";
+const TARGET_TOKEN = process.env.REACT_APP_HEDERA_ASSET_CONTRACT_ID || "";
 
-const API_HEDERA_MIRRORNODE = process.env.REACT_APP_API_HEDERA_MIRRORNODE
+// A safe, non-null placeholder so UI can render immediately
+const EMPTY_ASSET = {
+  token_id: "",
+  balance: 0,
+  name: "—",
+  type: "OPEN",
+  location: "—",
+  media: "",
+  images: [],
+  total_assets_available: "0",
+  bedrooms: 0,
+  bathrooms: 0,
+  area: 0,
+  yearBuilt: null,
+  collected: 0,
+  price: 0,
+};
+
+function formatHbarFixed(tinybar) {
+  const n = Number(tinybar ?? 0) / 10 ** 8;
+  return n.toFixed(3);
+}
 
 const useMarketPlace = () => {
+  // Generic (kept for compatibility)
   const [marketPlaceAssets, setMarketPlaceAssets] = useState([]);
-  const [highlightedMarketplaceAssets, setHighlightedMarketplaceAssets] = useState([]);
+  const [highlightedMarketplaceAssets, setHighlightedMarketplaceAssets] = useState(EMPTY_ASSET);
+
+  // Hedera
+  const [HederaMarketplaceAssets, setHederaMarketplaceAssets] = useState([]);
+  const [highlightedHederaMarketplaceAssets, setHederaHighlightedMarketplaceAssets] = useState(EMPTY_ASSET);
+  const [hederaContractAllAssets, setHederaContractAllAssets] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [isError, setErrorFetching] = useState(false);
 
-  // Hedera
-
-    // Hedera Implementation
-
-    const TARGET_TOKEN = process.env.REACT_APP_HEDERA_ASSET_CONTRACT_ID;
-
-    function extractTargetToken(obj) {
-      const tokens = obj?.tokens ?? obj?.balance?.tokens ?? [];
-      return tokens.filter((t) => t.token_id === TARGET_TOKEN);
-    }
-
-    // Always show EXACTLY 3 decimals
-    function formatHbarFixed(tinybar) {
-      const n = Number(tinybar ?? 0) / 10 ** 8;
-      return n.toFixed(3); // <- fixed 3 decimals, never trimmed
-    }
-
-    const [HederaMarketplaceAssets, setHederaMarketplaceAssets] = useState([]);
-    const [highlightedHederaMarketplaceAssets, setHederaHighlightedMarketplaceAssets] = useState([]);
-    const [hederaContractAllAssets, setHederaContractAllAssets] = useState([]);
-
-    const FetchHederaContractAllAssets = async () => {
-    setLoading(true)
-
+  const FetchHederaContractAllAssets = async () => {
+    setLoading(true);
     try {
+      const res = await axios.get(API_HEDERA_MIRRORNODE);
+      const tokens = res?.data?.balance?.tokens ?? [];
 
-      const fetchHederaAssets = await axios.get(API_HEDERA_MIRRORNODE)
-      const hederaContractAssetsFetched = fetchHederaAssets.data.balance.tokens
-
-      console.log("hederaContractAssetsFetched:", hederaContractAssetsFetched)
-      // console.log("cleanHederaAssets:", cleanHederaAssets);
-      // const assetContractCurrentTokenAmount = extractTargetToken(cleanHederaAssets)[0].balance / (10**8);
-      // 
-      // console.log("fetchHederaAssets", assetContractCurrentTokenAmount);
-
-      // Map the fetched tokens into structured objects
-      const hederaContractAllTokens = hederaContractAssetsFetched?.map((item, index) => ({
+      const normalized = tokens.map((item) => ({
         ...item,
         type: "OPEN",
         location: "Dubai",
         media: "",
-        // If the collected is 0, the app breaks
-        collected:
-          ((10000 * Math.pow(10, 8) - item?.balance) / Math.pow(10, 8)) / 100,
-        price: Math.pow(10, 6),  // Price is hard coded, change this later.
+        collected: ((10000 * 10 ** 8 - Number(item?.balance ?? 0)) / 10 ** 8) / 100,
+        price: 10 ** 6,
       }));
 
-      console.log("hederaContractAllTokens:", hederaContractAllTokens)
+      // Prefer the target; otherwise first available; otherwise EMPTY_ASSET
+      const picked =
+        normalized.find((t) => String(t.token_id) === String(TARGET_TOKEN)) ??
+        normalized[0] ??
+        { ...EMPTY_ASSET };
 
-      const hederaContractTokenizedAsset = hederaContractAllTokens.slice(0,1).map((item) => {
-        if (item.token_id.startsWith(TARGET_TOKEN)) {
-          return {
-            ...item,
-            name: "Cavalli Apartment 1",
-            location: "Dubai",
-            images:
-                [
-                  DamacCavalli1,
-                  DamacCavalli2,
-                  DamacCavalli3,
-                  DamacCavalli4
-                ],
-            total_assets_available: "10000",
-            bedrooms: 1,
-            bathrooms: 1,
-            area: 86,
-            yearBuilt: 2025
-          };
-    
-      // const hederaTokenAmount = formatHbarFixed(cleanHederaAssets.balance?.balance)
-      // console.log("hederaTokenAmount", hederaTokenAmount);
-      }
+      const tokenizedAssets =
+        picked.token_id
+          ? [
+              {
+                ...picked,
+                name: "Cavalli Apartment 1",
+                images: [DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4],
+                total_assets_available: "10000",
+                bedrooms: 1,
+                bathrooms: 1,
+                area: 86,
+                yearBuilt: 2025,
+              },
+            ]
+          : [];
 
-      console.log("1:", hederaContractTokenizedAsset.slice(0))
-      // console.log("2:", hederaContractTokenizedAsset[0])
-      // console.log("3:", hederaContractTokenizedAsset)
-    
-    })
+      // Always keep highlighted non-null (fallback to EMPTY_ASSET)
+      const highlighted = tokenizedAssets[0] ?? { ...EMPTY_ASSET };
 
-    setHederaMarketplaceAssets(hederaContractTokenizedAsset.slice(0))
-    setHederaHighlightedMarketplaceAssets(hederaContractTokenizedAsset.slice(0)[0])
-    setHederaContractAllAssets(hederaContractTokenizedAsset)
+      setHederaMarketplaceAssets(tokenizedAssets);
+      setHederaHighlightedMarketplaceAssets(highlighted);
+      setHederaContractAllAssets(tokenizedAssets);
 
-    const dataToStore = {
-      HederaMarketplaceAssets: hederaContractTokenizedAsset.slice(0),
-      HederaHighlightedMarketplaceAssets: hederaContractTokenizedAsset[0],
-      HederaContractAllAssets: hederaContractTokenizedAsset,
-    };
+      // keep the legacy mirrors in sync (optional)
+      setMarketPlaceAssets(tokenizedAssets);
+      setHighlightedMarketplaceAssets(highlighted);
 
-    const currentTime = new Date().getTime();
-    sessionStorage.setItem("marketPlaceData2", JSON.stringify(dataToStore));
-    sessionStorage.setItem("marketPlaceTimestamp2", currentTime.toString());
-// 
-// 
-  
-      setLoading(false);
-    } catch(error) {
-      console.log("error:", error)
-      setLoading(false);
+      sessionStorage.setItem(
+        "marketPlaceData2",
+        JSON.stringify({
+          HederaMarketplaceAssets: tokenizedAssets,
+          HederaHighlightedMarketplaceAssets: highlighted,
+          HederaContractAllAssets: tokenizedAssets,
+        })
+      );
+      sessionStorage.setItem("marketPlaceTimestamp2", String(Date.now()));
+    } catch (error) {
+      console.log("error:", error);
       setErrorFetching(true);
+      // keep safe values even on error
+      setHederaMarketplaceAssets([]);
+      setHederaHighlightedMarketplaceAssets({ ...EMPTY_ASSET });
+      setHederaContractAllAssets([]);
+    } finally {
+      setLoading(false);
     }
-
-  }
-
-  // ------------------------------------------------
-
-  // Hedera Fetch
+  };
 
   useEffect(() => {
     const storedData = sessionStorage.getItem("marketPlaceData2");
     const storedTimestamp = sessionStorage.getItem("marketPlaceTimestamp2");
-    const currentTime = new Date().getTime();
-    if (
-    storedData &&
-    storedTimestamp &&
-    currentTime - parseInt(storedTimestamp) < 600000
-    
-    ) {
-    const parsedData = JSON.parse(storedData);
-    setHederaMarketplaceAssets(parsedData.HederaMarketplaceAssets)
-    setHederaHighlightedMarketplaceAssets(parsedData.HederaHighlightedMarketplaceAssets)
-    setHederaContractAllAssets(parsedData.HederaContractAllAssets)
+    const currentTime = Date.now();
 
-    console.log("HederaMarketplaceAssets STORAGEDATA1:", parsedData.HederaMarketplaceAssets)
-    console.log("HederaHighlightedMarketplaceAssets STORAGEDATA2:", parsedData.HederaHighlightedMarketplaceAssets)
-    console.log("HederaContractAllAssets STORAGEDATA3:", parsedData.HederaContractAllAssets)
+    const isFresh =
+      storedData && storedTimestamp && currentTime - parseInt(storedTimestamp, 10) < 600_000;
 
+    if (isFresh) {
+      const parsed = JSON.parse(storedData);
+      const a = parsed?.HederaMarketplaceAssets ?? [];
+      const h = parsed?.HederaHighlightedMarketplaceAssets ?? { ...EMPTY_ASSET };
+      const all = parsed?.HederaContractAllAssets ?? [];
+      setHederaMarketplaceAssets(a);
+      setHederaHighlightedMarketplaceAssets(h);
+      setHederaContractAllAssets(all);
+      setMarketPlaceAssets(a);
+      setHighlightedMarketplaceAssets(h);
     } else {
       FetchHederaContractAllAssets();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { loading, isError, marketPlaceAssets, highlightedMarketplaceAssets,
-    // Hedera
-    HederaMarketplaceAssets, highlightedHederaMarketplaceAssets, hederaContractAllAssets
-   };
+  return {
+    loading,
+    isError,
+
+    marketPlaceAssets,
+    highlightedMarketplaceAssets,
+
+    HederaMarketplaceAssets,
+    highlightedHederaMarketplaceAssets,
+    hederaContractAllAssets,
+
+    formatHbarFixed,
+  };
 };
 
 export { useMarketPlace };
