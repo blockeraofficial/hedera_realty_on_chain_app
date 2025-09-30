@@ -40,7 +40,7 @@ const Navbar = ({toggle}) => {
         <h6 className="font-semibold text-rocBlack-100 font-manrope">
           Welcome to the Realty on Chain Beta on Hedera Testnet. Start{" "}
           <a
-          href="https://medium.com/@blockera_online/buy-your-first-realty-token-on-roc-beta-stellar-testnet-guide-ce11f3117566"
+          href="./"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 underline hover:text-blue-800"
