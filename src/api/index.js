@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -7,9 +6,14 @@ import axios from "axios";
 // const TARGET_TOKEN = "0.0.6873059";
 
 // BACKEND CALLS
+// burda call at
 
 const API = axios.create({
-  // baseURL: "http://localhost:4000/api",
+  baseURL: "http://localhost:4000/api",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
   // baseURL: "https://stellar-kickstart-backend.onrender.com/api",
 });
 
@@ -18,7 +22,7 @@ const ResponseInterceptor = (response) => {
 };
 
 const RequestInterceptor = async (requestConfig) => {
-  requestConfig.headers.Authorization = "Bearer ABCD1234";
+  /* requestConfig.headers.Authorization = "Bearer ABCD1234"; */
   return requestConfig;
 };
 
@@ -39,9 +43,9 @@ API.interceptors.response.use(ResponseInterceptor, (error) => {
 });
 
 const getStellarContractAssets = async () => {
-  const assets = await API.get("/contract-assets")
+  const assets = await API.get("/contract-assets");
   return assets;
-}
+};
 
 // Do it later
 
@@ -51,4 +55,3 @@ const getStellarContractAssets = async () => {
 // }
 
 export { API, getStellarContractAssets };
-

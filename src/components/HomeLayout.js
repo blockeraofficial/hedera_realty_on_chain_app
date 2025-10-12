@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar, Navbar, Footer } from "components";
 import Cookies from "./Cookies";
+import { Outlet } from "react-router-dom";
 
 const HomeLayout = ({ children }) => {
   const [isOpen, setOpen] = useState(false);
@@ -15,11 +16,9 @@ const HomeLayout = ({ children }) => {
         onClose={onCloseSidebar}
       />
       <div className="flex flex-col space-y-2 w-full min-h-[calc(100vh_-_1rem)] md:min-h-[calc(100vh_-_2rem)]">
-        <Navbar
-          toggle={toggleSidebar}
-        />
+        <Navbar toggle={toggleSidebar} />
         <div className="flex-1 mx-auto p-4 w-full lg:max-w-[1300px]">
-          {children}
+          <Outlet /> {/* children yerine Outlet kullan */}
         </div>
         <Footer />
       </div>

@@ -1,8 +1,14 @@
 // useMarketPlace.js
 import { useEffect, useState } from "react";
-import { DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4 } from "assets/images";
+import {
+  DamacCavalli1,
+  DamacCavalli2,
+  DamacCavalli3,
+  DamacCavalli4,
+} from "assets/images";
 import axios from "axios";
 
+/* Parselemen lazım çektiklerimi */
 const API_HEDERA_MIRRORNODE = process.env.REACT_APP_API_HEDERA_MIRRORNODE || "";
 const TARGET_TOKEN = process.env.REACT_APP_HEDERA_ASSET_CONTRACT_ID || "";
 
@@ -32,11 +38,15 @@ function formatHbarFixed(tinybar) {
 const useMarketPlace = () => {
   // Generic (kept for compatibility)
   const [marketPlaceAssets, setMarketPlaceAssets] = useState([]);
-  const [highlightedMarketplaceAssets, setHighlightedMarketplaceAssets] = useState(EMPTY_ASSET);
+  const [highlightedMarketplaceAssets, setHighlightedMarketplaceAssets] =
+    useState(EMPTY_ASSET);
 
   // Hedera
   const [HederaMarketplaceAssets, setHederaMarketplaceAssets] = useState([]);
-  const [highlightedHederaMarketplaceAssets, setHederaHighlightedMarketplaceAssets] = useState(EMPTY_ASSET);
+  const [
+    highlightedHederaMarketplaceAssets,
+    setHederaHighlightedMarketplaceAssets,
+  ] = useState(EMPTY_ASSET);
   const [hederaContractAllAssets, setHederaContractAllAssets] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -53,31 +63,36 @@ const useMarketPlace = () => {
         type: "OPEN",
         location: "Dubai",
         media: "",
-        collected: ((10000 * 10 ** 8 - Number(item?.balance ?? 0)) / 10 ** 8) / 100,
+        collected:
+          (10000 * 10 ** 8 - Number(item?.balance ?? 0)) / 10 ** 8 / 100,
         price: 10 ** 6,
       }));
 
       // Prefer the target; otherwise first available; otherwise EMPTY_ASSET
-      const picked =
-        normalized.find((t) => String(t.token_id) === String(TARGET_TOKEN)) ??
-        normalized[0] ??
-        { ...EMPTY_ASSET };
+      const picked = normalized.find(
+        (t) => String(t.token_id) === String(TARGET_TOKEN)
+      ) ??
+        normalized[0] ?? { ...EMPTY_ASSET };
 
-      const tokenizedAssets =
-        picked.token_id
-          ? [
-              {
-                ...picked,
-                name: "Cavalli Apartment 1",
-                images: [DamacCavalli1, DamacCavalli2, DamacCavalli3, DamacCavalli4],
-                total_assets_available: "10000",
-                bedrooms: 1,
-                bathrooms: 1,
-                area: 86,
-                yearBuilt: 2025,
-              },
-            ]
-          : [];
+      const tokenizedAssets = picked.token_id
+        ? [
+            {
+              ...picked,
+              name: "Cavalli Apartment 1",
+              images: [
+                DamacCavalli1,
+                DamacCavalli2,
+                DamacCavalli3,
+                DamacCavalli4,
+              ],
+              total_assets_available: "10000",
+              bedrooms: 1,
+              bathrooms: 1,
+              area: 86,
+              yearBuilt: 2025,
+            },
+          ]
+        : [];
 
       // Always keep highlighted non-null (fallback to EMPTY_ASSET)
       const highlighted = tokenizedAssets[0] ?? { ...EMPTY_ASSET };
@@ -117,12 +132,16 @@ const useMarketPlace = () => {
     const currentTime = Date.now();
 
     const isFresh =
-      storedData && storedTimestamp && currentTime - parseInt(storedTimestamp, 10) < 600_000;
+      storedData &&
+      storedTimestamp &&
+      currentTime - parseInt(storedTimestamp, 10) < 600_000;
 
     if (isFresh) {
       const parsed = JSON.parse(storedData);
       const a = parsed?.HederaMarketplaceAssets ?? [];
-      const h = parsed?.HederaHighlightedMarketplaceAssets ?? { ...EMPTY_ASSET };
+      const h = parsed?.HederaHighlightedMarketplaceAssets ?? {
+        ...EMPTY_ASSET,
+      };
       const all = parsed?.HederaContractAllAssets ?? [];
       setHederaMarketplaceAssets(a);
       setHederaHighlightedMarketplaceAssets(h);
