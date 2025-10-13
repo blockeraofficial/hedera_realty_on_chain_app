@@ -17,6 +17,8 @@ const Navbar = ({ toggle }) => {
   const [open, setOpen] = useState(false);
   const { accountId, walletInterface } = useWalletInterface();
 
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
   const handleConnect = async () => {
     // Auth kontrolü!
     if (!isAuthenticated) {
@@ -42,6 +44,27 @@ const Navbar = ({ toggle }) => {
       navigate("/auth/login");
     }
   };
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    const result = await signOut();
+    if (result.success) {
+      toast.success("Logged out successfully!");
+      navigate("/auth/login");
+    } else {
+      toast.error("Logout failed. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuOpen && !event.target.closest(".user-menu-container")) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [userMenuOpen]);
 
   useEffect(() => {
     if (accountId) {
@@ -77,13 +100,23 @@ const Navbar = ({ toggle }) => {
       <div className="flex items-center space-x-2">
         {/* Auth Status */}
         {!isAuthenticated ? (
-          <button
-            type="button"
-            onClick={() => navigate("/auth/register")}
-            className="cursor-pointer bg-rocPurple-300 px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100 focus:outline-none focus:ring-2 focus:ring-[#1a54da]/60"
-          >
-            Sign Up / Login
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => navigate("/auth/register")}
+              className="cursor-pointer bg-rocPurple-300 px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100 focus:outline-none focus:ring-2 focus:ring-[#1a54da]/60"
+            >
+              Sign Up
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/auth/login")}
+              className="cursor-pointer bg-rocPurple-300 px-4 py-1 rounded-full text-rocWhite-900 font-manrope border border-[#1a54da] hover:bg-rocWhite-900 hover:text-rocBlack-100 focus:outline-none focus:ring-2 focus:ring-[#1a54da]/60"
+            >
+              Login
+            </button>
+          </>
         ) : (
           <>
             {/* Wallet Connection (only for authenticated users) */}
@@ -103,15 +136,53 @@ const Navbar = ({ toggle }) => {
                 Connect Wallet
               </button>
             )}
+            <div className="relative user-menu-container">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="cursor-pointer bg-gradient-to-br from-rocPurple-300 to-rocBlue-300 w-10 h-10 rounded-full text-white font-manrope font-bold hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rocPurple-300 flex items-center justify-center text-lg transition-all transform hover:scale-105"
+                title={user?.email || "Account"}
+              >
+                {user?.email?.[0]?.toUpperCase() || "A"}
+              </button>
 
-            {/* User Menu (simple logout for now) */}
-            <button
-              type="button"
-              onClick={handleAuthAction}
-              className="cursor-pointer bg-gray-200 px-4 py-1 rounded-full text-rocBlack-100 font-manrope hover:bg-gray-300 focus:outline-none"
-            >
-              {user?.email?.split("@")[0] || "Account"}
-            </button>
+              {/* Dropdown Menu */}
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  {/* User Info */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-semibold text-rocBlack-100 font-manrope">
+                      Signed in as
+                    </p>
+                    <p className="text-sm text-rocBlack-200 font-manrope truncate">
+                      {user?.email || "user@example.com"}
+                    </p>
+                  </div>
+
+                  {/* Menu Items */}
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-rocBlack-100 hover:bg-gray-50 font-manrope transition-colors"
+                  >
+                    Dashboard
+                  </button>
+
+                  {/* Divider */}
+                  <div className="border-t border-gray-100 my-1"></div>
+
+                  {/* Logout */}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-manrope transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         )}
 

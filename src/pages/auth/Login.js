@@ -8,6 +8,7 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const emailFromUrl = searchParams.get("email") || "";
   const verified = searchParams.get("verified");
+  const reset = searchParams.get("reset");
 
   const [email, setEmail] = useState(emailFromUrl);
   const [password, setPassword] = useState("");
@@ -69,6 +70,14 @@ export default function Login() {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <p className="text-green-700 text-sm font-manrope">
               ✅ Email verified successfully! Please login.
+            </p>
+          </div>
+        )}
+
+        {reset === "success" && ( // ← YENİ EKLE
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <p className="text-green-700 text-sm font-manrope">
+              ✅ Password reset successful! Please login with your new password.
             </p>
           </div>
         )}

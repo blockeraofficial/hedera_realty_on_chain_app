@@ -18,7 +18,7 @@ import PrivacyPolicy from "pages/PrivacyPolicy";
 import TermsOfService from "pages/TermsAndService";
 
 // Auth Pages
-import { Register, Login } from "./pages/auth";
+import { Register, Login, ForgotPassword } from "./pages/auth";
 
 // Contexts
 import { AuthProvider } from "./contexts/AuthContext";
@@ -35,7 +35,8 @@ const App = () => {
             {/* Auth Routes (WITHOUT HomeLayout - full screen) */}
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/login" element={<Login />} />
-
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+            {/* ← YENİ */}
             {/* Main App Routes (WITH HomeLayout - navbar + sidebar) */}
             <Route element={<HomeLayout />}>
               <Route path="/" element={<MarketPlacePage />} />
